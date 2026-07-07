@@ -12,13 +12,17 @@ public class Game {
 
     static final String baseGame = "BASE";
 
-
-    public Game(String name, String folderPath) {
+    public Game(String name, String folderPath, String enabledMod) {
         setName(name);
         setFolderPath(folderPath);
         if (folderPath.toCharArray()[folderPath.length() - 1] == '/') {
             setFolderPath(folderPath.substring(0, folderPath.length() - 1));
         }
+        setEnabledMod("");
+    }
+
+    public Game(String name, String folderPath) {
+        this(name, folderPath, "");
     }
 
     public Game() {

@@ -1,8 +1,8 @@
 package gui;
 
+import io.IOReader;
 import io.IOWriter;
 import model.Game;
-import model.Mod;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ public class ManagerGUI extends JPanel {
     static DefaultListModel<Game> listModel = new DefaultListModel<>();
     static JList<Game> gameList = new JList<>(listModel);
 
-    public static ArrayList<Game> games = new ArrayList<Game>();
+    public static ArrayList<Game> games = new ArrayList<>();
 
     static int defaultWidth = 1200;
     static int defaultHeight = 900;
@@ -44,9 +44,10 @@ public class ManagerGUI extends JPanel {
         gameList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         gameList.setFont(new Font(gameList.getFont().getFontName(), Font.PLAIN, 20));
         JScrollPane scrollPane = new JScrollPane(gameList);
+//        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(defaultWidth * 3 / 4, defaultHeight / 3));
-        scrollPane.setMaximumSize(new Dimension(defaultWidth * 3 / 4, defaultHeight / 3));
-        gameListPanel.add(gameList, BorderLayout.CENTER);
+//        scrollPane.setMaximumSize(new Dimension(defaultWidth * 3 / 4, defaultHeight / 3));
+        gameListPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout());
@@ -65,7 +66,7 @@ public class ManagerGUI extends JPanel {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
                 int invDialogScale = 4;
                 JDialog dialog = new JDialog(frame, "Add Game", true);
-                dialog.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                dialog.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
                 dialog.setLayout(new GridLayout(0, 1));
 
                 float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
@@ -91,7 +92,7 @@ public class ManagerGUI extends JPanel {
                 JPanel buttonRow = new JPanel(new FlowLayout());
                 JButton cancel = new JButton("Cancel");
                 JButton ok = new JButton("OK");
-                Dimension buttonSize = new Dimension((int) (screenSize.width / invDialogScale / 3), (int) (screenSize.height / invDialogScale / 6));
+                Dimension buttonSize = new Dimension(screenSize.width / invDialogScale / 3, screenSize.height / invDialogScale / 6);
                 cancel.setPreferredSize(buttonSize);
                 cancel.setFont(cancel.getFont().deriveFont((float)(buttonSize.height * 0.3)));
                 ok.setPreferredSize(buttonSize);
@@ -114,7 +115,7 @@ public class ManagerGUI extends JPanel {
                         }
                         catch (IllegalArgumentException ex) {
                             JDialog error = new JDialog(frame, "Error", true);
-                            error.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                            error.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
                             error.setLayout(new GridLayout(0, 1));
                             error.add(new JPanel());
 
@@ -161,15 +162,15 @@ public class ManagerGUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Game game = gameList.getSelectedValue();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int invDialogScale = 4;
                 if (game == null) {
-                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    int invDialogScale = 4;
                     float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
-                    Dimension buttonSize = new Dimension((int) (screenSize.width / invDialogScale / 3), (int) (screenSize.height / invDialogScale / 6));
+                    Dimension buttonSize = new Dimension(screenSize.width / invDialogScale / 3, screenSize.height / invDialogScale / 6);
 
 
                     JDialog error = new JDialog(frame, "Error", true);
-                    error.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                    error.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
                     error.setLayout(new GridLayout(0, 1));
                     error.add(new JPanel());
 
@@ -199,10 +200,8 @@ public class ManagerGUI extends JPanel {
 
                 }
                 else {
-                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-                    int invDialogScale = 4;
                     JDialog dialog = new JDialog(frame, "Editing " + game.getName(), true);
-                    dialog.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                    dialog.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
                     dialog.setLayout(new GridLayout(0, 1));
 
                     float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
@@ -230,7 +229,7 @@ public class ManagerGUI extends JPanel {
                     JPanel buttonRow = new JPanel(new FlowLayout());
                     JButton cancel = new JButton("Cancel");
                     JButton ok = new JButton("OK");
-                    Dimension buttonSize = new Dimension((int) (screenSize.width / invDialogScale / 3), (int) (screenSize.height / invDialogScale / 6));
+                    Dimension buttonSize = new Dimension(screenSize.width / invDialogScale / 3, screenSize.height / invDialogScale / 6);
                     cancel.setPreferredSize(buttonSize);
                     cancel.setFont(cancel.getFont().deriveFont((float)(buttonSize.height * 0.3)));
                     ok.setPreferredSize(buttonSize);
@@ -249,7 +248,7 @@ public class ManagerGUI extends JPanel {
                                 if (!game.getName().equals(nameField.getText())) {
                                     IOWriter.deleteGame(game);
                                     game.setName(nameField.getText());
-
+                                    listModel.set(0, listModel.get(0));
                                 }
                                 IOWriter.writeGame(game);
                                 dialog.dispose();
@@ -257,7 +256,7 @@ public class ManagerGUI extends JPanel {
                             }
                             catch (IllegalArgumentException ex) {
                                 JDialog error = new JDialog(frame, "Error", true);
-                                error.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                                error.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
                                 error.setLayout(new GridLayout(0, 1));
                                 error.add(new JPanel());
 
@@ -317,7 +316,7 @@ public class ManagerGUI extends JPanel {
                 int width = frame.getContentPane().getWidth();
                 int height = frame.getContentPane().getHeight();
 
-                Dimension buttonSize = new Dimension((int) (width / 4), (int) (height / 8));
+                Dimension buttonSize = new Dimension(width / 4, height / 8);
                 for (JButton button : new JButton[]{select, edit, add}) {
                     button.setPreferredSize(buttonSize);
                     button.setFont(button.getFont().deriveFont((float)(buttonSize.height * 0.3)));
@@ -325,32 +324,22 @@ public class ManagerGUI extends JPanel {
 
                 float listFontSize = Math.max(12f, width / 40f);
                 gameList.setFont(gameList.getFont().deriveFont(listFontSize));
+
                 int scrollPaneMargin = Math.max(10, frame.getWidth() / 30);
                 gameListPanel.setBorder(BorderFactory.createEmptyBorder(scrollPaneMargin, scrollPaneMargin, scrollPaneMargin, scrollPaneMargin));
 
                 panel.revalidate();
+                System.out.println("Pane:" + scrollPane.getPreferredSize());
+                System.out.println("List: " + gameList.getPreferredSize());
+                System.out.println(gameList.getParent());
             }
         });
 
 
-
-        Game sor = new Game("Streets of Rogue", "/home/greetings/IdeaProjects/multi-mod-manager/test/Streets of Rogue/");
-        Mod ccu = new Mod("CCU");
-        Game undertale = new Game("Undertale", "/home/greetings/IdeaProjects/multi-mod-manager/test/Undertale/");
-        Game deltarune = new Game("Deltarune", "/home/greetings/IdeaProjects/multi-mod-manager/test/Deltarune/");
-        Game tvruhh = new Game("The Void Rains Upon Her Heart", "/home/greetings/IdeaProjects/multi-mod-manager/test/The Void Rains Upon Her Heart/");
-
-        games.add(sor);
-        games.add(undertale);
-        games.add(deltarune);
-        games.add(tvruhh);
+        IOWriter.makeFolder();
+        IOReader.readGames();
         for (Game game : games) {
             listModel.addElement(game);
         }
-        sor.addMod(ccu);
-        sor.enableMod(ccu);
-//        sor.disableMod();
-        IOWriter.makeFolder();
-        IOWriter.writeAllGames();
     }
 }
