@@ -1,5 +1,7 @@
 package model;
 
+import gui.ManagerGUI;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -87,7 +89,12 @@ public class Game {
 
     public void setName(String name) {
         if (name == null || "".equals(name)) {
-            throw new IllegalArgumentException("Game name cannot be null or empty.");
+            throw new IllegalArgumentException("Game name cannot be empty.");
+        }
+        for (Game game : ManagerGUI.games) {
+            if (name.equals(game.getName())) {
+                throw new IllegalArgumentException("Game name cannot be a duplicate.");
+            }
         }
         this.name = name;
     }
@@ -98,7 +105,7 @@ public class Game {
 
     public void setFolderPath(String folderPath) {
         if (folderPath == null || "".equals(folderPath)) {
-            throw new IllegalArgumentException("Folder path cannot be null or empty.");
+            throw new IllegalArgumentException("Folder path cannot be empty.");
         }
         this.folderPath = folderPath;
     }

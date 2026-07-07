@@ -54,10 +54,12 @@ public class ManagerGUI extends JPanel {
         JButton select = new JButton("Select Game");
         JButton edit = new JButton("Edit Game");
         JButton add = new JButton("Add Game");
+        JButton delete = new JButton("Delete Game");
         select.setPreferredSize(new Dimension(defaultWidth / 4, defaultHeight / 8));
         edit.setPreferredSize(new Dimension(defaultWidth / 4, defaultHeight / 8));
         add.setPreferredSize(new Dimension(defaultWidth / 4, defaultHeight / 8));
         buttonsPanel.add(add);
+        buttonsPanel.add(delete);
         buttonsPanel.add(edit);
         buttonsPanel.add(select);
         add.addActionListener(new ActionListener() {
@@ -119,7 +121,7 @@ public class ManagerGUI extends JPanel {
                             error.setLayout(new GridLayout(0, 1));
                             error.add(new JPanel());
 
-                            JLabel errorLabel = new JLabel("Name and path cannot be empty.");
+                            JLabel errorLabel = new JLabel(ex.getMessage());
                             errorLabel.setFont(errorLabel.getFont().deriveFont(fontSize));
                             JPanel errorLabelPanel = new JPanel(new FlowLayout());
                             errorLabelPanel.add(errorLabel);
@@ -248,7 +250,7 @@ public class ManagerGUI extends JPanel {
                                 if (!game.getName().equals(nameField.getText())) {
                                     IOWriter.deleteGame(game);
                                     game.setName(nameField.getText());
-                                    listModel.set(0, listModel.get(0));
+                                    gameList.repaint();
                                 }
                                 IOWriter.writeGame(game);
                                 dialog.dispose();
@@ -260,7 +262,7 @@ public class ManagerGUI extends JPanel {
                                 error.setLayout(new GridLayout(0, 1));
                                 error.add(new JPanel());
 
-                                JLabel errorLabel = new JLabel("Name and path cannot be empty.");
+                                JLabel errorLabel = new JLabel(ex.getMessage());
                                 errorLabel.setFont(errorLabel.getFont().deriveFont(fontSize));
                                 JPanel errorLabelPanel = new JPanel(new FlowLayout());
                                 errorLabelPanel.add(errorLabel);
@@ -301,6 +303,108 @@ public class ManagerGUI extends JPanel {
             }
         });
 
+        delete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game game = gameList.getSelectedValue();
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                int invDialogScale = 4;
+
+                if (game == null) {
+                    float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
+                    Dimension buttonSize = new Dimension(screenSize.width / invDialogScale / 3, screenSize.height / invDialogScale / 6);
+
+
+                    JDialog error = new JDialog(frame, "Error", true);
+                    error.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
+                    error.setLayout(new GridLayout(0, 1));
+                    error.add(new JPanel());
+
+                    JLabel errorLabel = new JLabel("Please select a game.");
+                    errorLabel.setFont(errorLabel.getFont().deriveFont(fontSize));
+                    JPanel errorLabelPanel = new JPanel(new FlowLayout());
+                    errorLabelPanel.add(errorLabel);
+                    error.add(errorLabelPanel);
+
+                    JPanel errorButtonPanel = new JPanel(new FlowLayout());
+                    JButton errorButton = new JButton("OK");
+                    errorButton.setPreferredSize(buttonSize);
+                    errorButton.setFont(errorButton.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    errorButtonPanel.add(errorButton);
+                    error.add(errorButtonPanel);
+
+                    errorButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            error.dispose();
+                        }
+                    });
+
+                    error.pack();
+                    error.setLocationRelativeTo(null);
+                    error.setVisible(true);
+
+                }
+                else {
+                    JDialog dialog = new JDialog(frame, "Warning!", true);
+                    dialog.setPreferredSize(new Dimension(screenSize.width / invDialogScale, screenSize.height / invDialogScale));
+                    dialog.setLayout(new GridLayout(0, 1));
+
+                    float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
+
+                    JPanel textRow = new JPanel(new FlowLayout());
+                    JLabel textLabel = new JLabel("Delete " + game.getName() + "?");
+                    textLabel.setFont(textLabel.getFont().deriveFont(fontSize));
+                    textRow.add(textLabel);
+                    dialog.add(textRow);
+
+                    JPanel textRow2 = new JPanel(new FlowLayout());
+                    JLabel textLabel2 = new JLabel("This cannot be undone.");
+                    textLabel2.setFont(textLabel2.getFont().deriveFont(fontSize));
+                    textRow2.add(textLabel2);
+                    dialog.add(textRow2);
+
+
+                    JPanel buttonRow = new JPanel(new FlowLayout());
+                    JButton cancel = new JButton("Cancel");
+                    JButton ok = new JButton("Proceed");
+                    Dimension buttonSize = new Dimension(screenSize.width / invDialogScale / 3, screenSize.height / invDialogScale / 6);
+                    cancel.setPreferredSize(buttonSize);
+                    cancel.setFont(cancel.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    ok.setPreferredSize(buttonSize);
+                    ok.setFont(ok.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    cancel.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            dialog.dispose();
+                        }
+                    });
+                    ok.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            game.disableMod();
+                            IOWriter.deleteGame(game);
+                            listModel.removeElement(game);
+                            games.remove(game);
+                            dialog.dispose();
+                        }
+                    });
+
+                    buttonRow.add(cancel);
+                    buttonRow.add(ok);
+                    dialog.add(buttonRow);
+
+
+                    dialog.pack();
+                    dialog.setLocationRelativeTo(null);
+                    dialog.setVisible(true);
+
+                }
+
+
+            }
+        });
+
 
         panel.add(gameListPanel, BorderLayout.CENTER);
         panel.add(buttonsPanel, BorderLayout.SOUTH);
@@ -316,10 +420,10 @@ public class ManagerGUI extends JPanel {
                 int width = frame.getContentPane().getWidth();
                 int height = frame.getContentPane().getHeight();
 
-                Dimension buttonSize = new Dimension(width / 4, height / 8);
-                for (JButton button : new JButton[]{select, edit, add}) {
+                Dimension buttonSize = new Dimension(width / 5, height / 8);
+                for (JButton button : new JButton[]{select, edit, add, delete}) {
                     button.setPreferredSize(buttonSize);
-                    button.setFont(button.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    button.setFont(button.getFont().deriveFont((float)(buttonSize.width * 0.1)));
                 }
 
                 float listFontSize = Math.max(12f, width / 40f);
@@ -329,9 +433,6 @@ public class ManagerGUI extends JPanel {
                 gameListPanel.setBorder(BorderFactory.createEmptyBorder(scrollPaneMargin, scrollPaneMargin, scrollPaneMargin, scrollPaneMargin));
 
                 panel.revalidate();
-                System.out.println("Pane:" + scrollPane.getPreferredSize());
-                System.out.println("List: " + gameList.getPreferredSize());
-                System.out.println(gameList.getParent());
             }
         });
 
