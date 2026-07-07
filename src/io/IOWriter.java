@@ -43,4 +43,8 @@ public class IOWriter {
             writeGame(game);
         }
     }
+    public static void deleteGame(Game game) {
+        File file = new File(path + folderName + game.getName() + ".mmm");
+        file.delete();
+    }
 }

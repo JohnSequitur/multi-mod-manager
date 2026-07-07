@@ -139,7 +139,7 @@ public class ManagerGUI extends JPanel {
                             });
 
                             error.pack();
-                            error.setLocationRelativeTo(frame);
+                            error.setLocationRelativeTo(null);
                             error.setVisible(true);
                         }
                     }
@@ -152,12 +152,155 @@ public class ManagerGUI extends JPanel {
 
 
                 dialog.pack();
-                dialog.setLocationRelativeTo(frame);
+                dialog.setLocationRelativeTo(null);
                 dialog.setVisible(true);
 
             }
         });
+        edit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Game game = gameList.getSelectedValue();
+                if (game == null) {
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    int invDialogScale = 4;
+                    float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
+                    Dimension buttonSize = new Dimension((int) (screenSize.width / invDialogScale / 3), (int) (screenSize.height / invDialogScale / 6));
 
+
+                    JDialog error = new JDialog(frame, "Error", true);
+                    error.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                    error.setLayout(new GridLayout(0, 1));
+                    error.add(new JPanel());
+
+                    JLabel errorLabel = new JLabel("Please select a game.");
+                    errorLabel.setFont(errorLabel.getFont().deriveFont(fontSize));
+                    JPanel errorLabelPanel = new JPanel(new FlowLayout());
+                    errorLabelPanel.add(errorLabel);
+                    error.add(errorLabelPanel);
+
+                    JPanel errorButtonPanel = new JPanel(new FlowLayout());
+                    JButton errorButton = new JButton("OK");
+                    errorButton.setPreferredSize(buttonSize);
+                    errorButton.setFont(errorButton.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    errorButtonPanel.add(errorButton);
+                    error.add(errorButtonPanel);
+
+                    errorButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            error.dispose();
+                        }
+                    });
+
+                    error.pack();
+                    error.setLocationRelativeTo(null);
+                    error.setVisible(true);
+
+                }
+                else {
+                    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                    int invDialogScale = 4;
+                    JDialog dialog = new JDialog(frame, "Editing " + game.getName(), true);
+                    dialog.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                    dialog.setLayout(new GridLayout(0, 1));
+
+                    float fontSize = Math.max(12f, (float) screenSize.width / invDialogScale/ 20f);
+
+                    JPanel nameRow = new JPanel(new FlowLayout());
+                    JLabel nameLabel = new JLabel("Game Name: ");
+                    nameLabel.setFont(nameLabel.getFont().deriveFont(fontSize));
+                    nameRow.add(nameLabel);
+                    JTextField nameField = new JTextField(10);
+                    nameField.setFont(nameField.getFont().deriveFont(fontSize));
+                    nameField.setText(game.getName());
+                    nameRow.add(nameField);
+                    dialog.add(nameRow);
+
+                    JPanel pathRow = new JPanel(new FlowLayout());
+                    JLabel pathLabel = new JLabel("Folder Path: ");
+                    pathLabel.setFont(pathLabel.getFont().deriveFont(fontSize));
+                    pathRow.add(pathLabel);
+                    JTextField pathField = new JTextField(10);
+                    pathField.setFont(pathField.getFont().deriveFont(fontSize));
+                    pathField.setText(game.getFolderPath());
+                    pathRow.add(pathField);
+                    dialog.add(pathRow);
+
+                    JPanel buttonRow = new JPanel(new FlowLayout());
+                    JButton cancel = new JButton("Cancel");
+                    JButton ok = new JButton("OK");
+                    Dimension buttonSize = new Dimension((int) (screenSize.width / invDialogScale / 3), (int) (screenSize.height / invDialogScale / 6));
+                    cancel.setPreferredSize(buttonSize);
+                    cancel.setFont(cancel.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    ok.setPreferredSize(buttonSize);
+                    ok.setFont(ok.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                    cancel.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            dialog.dispose();
+                        }
+                    });
+                    ok.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                game.setFolderPath(pathField.getText());
+                                if (!game.getName().equals(nameField.getText())) {
+                                    IOWriter.deleteGame(game);
+                                    game.setName(nameField.getText());
+
+                                }
+                                IOWriter.writeGame(game);
+                                dialog.dispose();
+
+                            }
+                            catch (IllegalArgumentException ex) {
+                                JDialog error = new JDialog(frame, "Error", true);
+                                error.setPreferredSize(new Dimension((int) (screenSize.width / invDialogScale), (int) (screenSize.height / invDialogScale)));
+                                error.setLayout(new GridLayout(0, 1));
+                                error.add(new JPanel());
+
+                                JLabel errorLabel = new JLabel("Name and path cannot be empty.");
+                                errorLabel.setFont(errorLabel.getFont().deriveFont(fontSize));
+                                JPanel errorLabelPanel = new JPanel(new FlowLayout());
+                                errorLabelPanel.add(errorLabel);
+                                error.add(errorLabelPanel);
+
+                                JPanel errorButtonPanel = new JPanel(new FlowLayout());
+                                JButton errorButton = new JButton("OK");
+                                errorButton.setPreferredSize(buttonSize);
+                                errorButton.setFont(errorButton.getFont().deriveFont((float)(buttonSize.height * 0.3)));
+                                errorButtonPanel.add(errorButton);
+                                error.add(errorButtonPanel);
+
+                                errorButton.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        error.dispose();
+                                    }
+                                });
+
+                                error.pack();
+                                error.setLocationRelativeTo(null);
+                                error.setVisible(true);
+                            }
+                        }
+                    });
+
+                    buttonRow.add(cancel);
+                    buttonRow.add(ok);
+                    dialog.add(buttonRow);
+
+
+                    dialog.pack();
+                    dialog.setLocationRelativeTo(null);
+                    dialog.setVisible(true);
+                }
+
+
+            }
+        });
 
 
         panel.add(gameListPanel, BorderLayout.CENTER);

@@ -81,7 +81,7 @@ public class Game {
         return name;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         if (name == null || "".equals(name)) {
             throw new IllegalArgumentException("Game name cannot be null or empty.");
         }
@@ -92,7 +92,7 @@ public class Game {
         return folderPath;
     }
 
-    private void setFolderPath(String folderPath) {
+    public void setFolderPath(String folderPath) {
         if (folderPath == null || "".equals(folderPath)) {
             throw new IllegalArgumentException("Folder path cannot be null or empty.");
         }
