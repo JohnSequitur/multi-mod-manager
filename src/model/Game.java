@@ -17,10 +17,7 @@ public class Game {
     public Game(String name, String folderPath, String enabledMod) {
         setName(name);
         setFolderPath(folderPath);
-        if (folderPath.toCharArray()[folderPath.length() - 1] == '/') {
-            setFolderPath(folderPath.substring(0, folderPath.length() - 1));
-        }
-        setEnabledMod("");
+        setEnabledMod(enabledMod);
     }
 
     public Game(String name, String folderPath) {
@@ -32,14 +29,20 @@ public class Game {
     }
 
     public void addMod(Mod modToAdd) {
-        // TODO: Don't allow duplicates
+        for (Mod mod : mods) {
+            if (mod.getName().equals(modToAdd.getName())) {
+                throw new IllegalArgumentException("Mod name cannot be a duplicate.");
+            }
+        }
         File modPath = new File(folderPath + " [" + modToAdd.getName() + "]");
-        modPath.mkdir();
+        if (!modToAdd.getName().equals(getEnabledMod())) {
+            modPath.mkdir();
+        }
         mods.add(modToAdd);
     }
 
-    public void removeMod() {
-        // TODO
+    public void removeMod(Mod mod) {
+        mods.remove(mod);
     }
 
     public void enableMod(Mod modToEnable) {
@@ -107,7 +110,12 @@ public class Game {
         if (folderPath == null || "".equals(folderPath)) {
             throw new IllegalArgumentException("Folder path cannot be empty.");
         }
-        this.folderPath = folderPath;
+        if (folderPath.toCharArray()[folderPath.length() - 1] == '/') {
+            this.folderPath = folderPath.substring(0, folderPath.length() - 1);
+        }
+        else {
+            this.folderPath = folderPath;
+        }
     }
 
     public String getEnabledMod() {
