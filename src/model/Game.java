@@ -9,7 +9,7 @@ public class Game {
 
     String name;
     String folderPath;
-    ArrayList<Mod> mods = new ArrayList<Mod>();
+    ArrayList<Mod> mods = new ArrayList<>();
     String enabledMod = "";
 
     static final String baseGame = "BASE";

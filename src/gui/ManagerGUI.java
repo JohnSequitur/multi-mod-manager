@@ -37,7 +37,7 @@ public class ManagerGUI extends JPanel {
         setPreferredSize(new Dimension(defaultWidth, defaultHeight));
     }
 
-    static void main(String[] args) {
+    static void main() {
         panel = new ManagerGUI();
         panel.setLayout(new BorderLayout());
         frame = new JFrame("Multi Mod Manager");
