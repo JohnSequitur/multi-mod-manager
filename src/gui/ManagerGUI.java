@@ -601,10 +601,12 @@ public class ManagerGUI extends JPanel {
         deselectMod.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                activeGame.disableMod();
-                activeVersion.setText("Vanilla");
-                IOWriter.writeGame(activeGame);
+                if (!activeGame.getEnabledMod().isEmpty()) {
+                    activeGame.disableMod();
+                    activeVersion.setText("Vanilla");
+                    IOWriter.writeGame(activeGame);
 
+                }
             }
         });
         deleteMod.addActionListener(new ActionListener() {
