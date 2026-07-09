@@ -16,12 +16,20 @@ public class IOWriter {
     static final String folderName = "MMM_Files/";
 
     public static void makeFolder() {
+        if (path.toCharArray()[2] == ':') {
+            path = path.substring(1);
+//            System.out.println(path);
+        }
         File folder = new File(path + folderName);
         if (!folder.exists()) {
             folder.mkdir();
         }
     }
     public static void writeGame(Game game) {
+        if (path.toCharArray()[2] == ':') {
+            path = path.substring(1);
+//            System.out.println(path);
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path + folderName + game.getName() + ".mmm"))) {
             writer.write(game.getName());
             writer.newLine();
@@ -44,6 +52,10 @@ public class IOWriter {
         }
     }
     public static void deleteGame(Game game) {
+        if (path.toCharArray()[2] == ':') {
+            path = path.substring(1);
+//            System.out.println(path);
+        }
         File file = new File(path + folderName + game.getName() + ".mmm");
         file.delete();
     }

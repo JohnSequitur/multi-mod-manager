@@ -17,6 +17,10 @@ public class IOReader {
     static final String folderName = "MMM_Files/";
 
     public static void readGames() {
+        if (path.toCharArray()[2] == ':') {
+            path = path.substring(1);
+//            System.out.println(path);
+        }
         Path dir = Path.of(path + folderName);
         try (Stream<Path> paths = Files.list(dir)) {
             paths.filter(Files::isRegularFile)
